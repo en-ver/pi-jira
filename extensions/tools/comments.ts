@@ -2,7 +2,9 @@ import { Type } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
-import { text, truncate, renderComment } from "../lib/output.js";
+import { text, truncate, rawJson, renderComment } from "../lib/output.js";
+
+const DEFAULT_FIELDS = ["author", "created", "body"] as const;
 
 export function registerCommentsTool(
   pi: ExtensionAPI,
@@ -29,6 +31,13 @@ export function registerCommentsTool(
             'Order by field (default "created" for oldest first, use "-created" for newest first)',
         }),
       ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -53,7 +62,10 @@ export function registerCommentsTool(
 
       await throwIfError(response, `Issue not found: ${params.issueKey}`);
 
-      const data = await response.json();
+      const data: any = await response.json();
+
+      if (params.raw) return rawJson(data);
+
       const comments: any[] = data.comments ?? [];
       const total: number = data.total ?? comments.length;
       const startAt: number = data.startAt ?? 0;

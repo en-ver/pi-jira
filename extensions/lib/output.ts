@@ -5,6 +5,10 @@ export function text(s: string) {
   return { content: [{ type: "text" as const, text: s }], details: undefined };
 }
 
+export function rawJson(data: unknown) {
+  return text(truncate(JSON.stringify(data, null, 2)));
+}
+
 export function truncate(s: string): string {
   const result = truncateHead(s);
   if (result.truncated) {

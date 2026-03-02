@@ -27,6 +27,13 @@ export function registerEditTool(
             'Additional fields to update as key-value pairs (e.g., {"priority": {"name": "High"}})',
         }),
       ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -51,6 +58,11 @@ export function registerEditTool(
       );
 
       await throwIfError(response, `Issue not found: ${params.issueKey}`);
+
+      if (params.raw) {
+        const body = await response.text();
+        return text(body || `HTTP ${response.status} ${response.statusText}`);
+      }
 
       return text(
         `Updated ${params.issueKey}${params.summary ? ": " + params.summary : ""}\nURL: ${cfg.url}/browse/${params.issueKey}`,

@@ -2,7 +2,17 @@ import { Type } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
-import { text, truncate, formatDate, displayName } from "../lib/output.js";
+import { text, truncate, rawJson } from "../lib/output.js";
+
+const DEFAULT_FIELDS = [
+  "summary",
+  "status",
+  "assignee",
+  "priority",
+  "issuetype",
+  "created",
+  "updated",
+];
 
 export function registerSearchTool(
   pi: ExtensionAPI,
@@ -27,20 +37,19 @@ export function registerSearchTool(
             "Fields to include (default: summary, status, assignee, priority, issuetype, created, updated)",
         }),
       ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const cfg = getConfig(ctx);
 
-      const requestedFields = params.fields ?? [
-        "summary",
-        "status",
-        "assignee",
-        "priority",
-        "issuetype",
-        "created",
-        "updated",
-      ];
+      const requestedFields = params.fields ?? DEFAULT_FIELDS;
       const limit = Math.min(params.maxResults ?? 20, 50);
 
       const queryParams = new URLSearchParams({
@@ -53,7 +62,10 @@ export function registerSearchTool(
 
       await throwIfError(response);
 
-      const data = await response.json();
+      const data: any = await response.json();
+
+      if (params.raw) return rawJson(data);
+
       const issues: any[] = data.issues ?? [];
 
       if (issues.length === 0) {
@@ -65,25 +77,9 @@ export function registerSearchTool(
         `Found ${issues.length} issue(s)${hasMore ? " (more available)" : ""}:\n`,
       ];
 
-      for (let i = 0; i < issues.length; i++) {
-        const issue = issues[i];
+      for (const issue of issues) {
         const f = issue.fields ?? {};
-        const parts: string[] = [
-          `${i + 1}. ${issue.key} [${f.status?.name ?? "—"}] — ${f.summary ?? "(no summary)"}`,
-        ];
-
-        const meta: string[] = [];
-        if (f.issuetype?.name) meta.push(`Type: ${f.issuetype.name}`);
-        if (f.priority?.name) meta.push(`Priority: ${f.priority.name}`);
-        meta.push(`Assignee: ${displayName(f.assignee)}`);
-        if (meta.length) parts.push(`   ${meta.join(" | ")}`);
-
-        const dates: string[] = [];
-        if (f.created) dates.push(`Created: ${formatDate(f.created)}`);
-        if (f.updated) dates.push(`Updated: ${formatDate(f.updated)}`);
-        if (dates.length) parts.push(`   ${dates.join(" | ")}`);
-
-        lines.push(parts.join("\n"));
+        lines.push(`${issue.id} ${issue.key} — ${f.summary ?? "(no summary)"}`);
       }
 
       return text(truncate(lines.join("\n")));

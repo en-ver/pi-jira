@@ -2,7 +2,9 @@ import { Type } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
-import { text } from "../lib/output.js";
+import { text, rawJson } from "../lib/output.js";
+
+const DEFAULT_FIELDS = ["key", "name"] as const;
 
 export function registerProjectsTool(
   pi: ExtensionAPI,
@@ -19,6 +21,13 @@ export function registerProjectsTool(
         Type.String({
           description:
             "Filter by project name or key (case insensitive). Omit to list all projects.",
+        }),
+      ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
         }),
       ),
     }),
@@ -41,7 +50,10 @@ export function registerProjectsTool(
 
       await throwIfError(response);
 
-      const data = await response.json();
+      const data: any = await response.json();
+
+      if (params.raw) return rawJson(data);
+
       const projects: any[] = data.values ?? [];
 
       if (projects.length === 0) {

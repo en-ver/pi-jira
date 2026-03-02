@@ -2,7 +2,9 @@ import { Type } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
-import { text } from "../lib/output.js";
+import { text, rawJson } from "../lib/output.js";
+
+const DEFAULT_FIELDS = ["displayName", "active", "accountId"] as const;
 
 export function registerUsersTool(
   pi: ExtensionAPI,
@@ -22,6 +24,13 @@ export function registerUsersTool(
       maxResults: Type.Optional(
         Type.Number({
           description: "Max users to return (default 10, max 50)",
+        }),
+      ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
         }),
       ),
     }),
@@ -45,7 +54,9 @@ export function registerUsersTool(
 
       await throwIfError(response);
 
-      const users: any[] = await response.json();
+      const users: any[] = (await response.json()) as any[];
+
+      if (params.raw) return rawJson(users);
 
       if (users.length === 0) {
         return text(`No users found matching: ${params.query}`);

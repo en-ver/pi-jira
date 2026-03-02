@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
 import { mdToAdf } from "../lib/adf.js";
-import { text } from "../lib/output.js";
+import { text, rawJson } from "../lib/output.js";
 
 export function registerCommentTool(
   pi: ExtensionAPI,
@@ -18,6 +18,13 @@ export function registerCommentTool(
     parameters: Type.Object({
       issueKey: Type.String({ description: "Issue key (e.g., PROJ-123)" }),
       body: Type.String({ description: "Comment text in markdown" }),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -32,6 +39,8 @@ export function registerCommentTool(
       );
 
       await throwIfError(response, `Issue not found: ${params.issueKey}`);
+
+      if (params.raw) return rawJson(await response.json());
 
       return text(
         `Added comment to ${params.issueKey}\nURL: ${cfg.url}/browse/${params.issueKey}`,

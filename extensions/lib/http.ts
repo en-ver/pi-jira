@@ -42,7 +42,7 @@ export async function throwIfError(response: Response, notFoundMsg?: string): Pr
 export async function formatError(response: Response): Promise<string> {
   let detail = "";
   try {
-    const json = await response.json();
+    const json: any = await response.json();
     const messages: string[] = [];
     if (json.errorMessages?.length) messages.push(...json.errorMessages);
     if (json.errors) {

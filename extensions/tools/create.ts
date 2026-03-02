@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
 import { mdToAdf } from "../lib/adf.js";
-import { text } from "../lib/output.js";
+import { text, rawJson } from "../lib/output.js";
 
 export function registerCreateTool(
   pi: ExtensionAPI,
@@ -30,6 +30,13 @@ export function registerCreateTool(
             'Additional fields as key-value pairs (e.g., {"priority": {"name": "High"}, "labels": ["backend"]})',
         }),
       ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -50,7 +57,10 @@ export function registerCreateTool(
 
       await throwIfError(response);
 
-      const data = await response.json();
+      const data: any = await response.json();
+
+      if (params.raw) return rawJson(data);
+
       return text(`Created ${data.key}: ${params.summary}\nURL: ${cfg.url}/browse/${data.key}`);
     },
   });

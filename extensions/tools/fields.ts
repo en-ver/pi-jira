@@ -2,7 +2,10 @@ import { Type } from "@mariozechner/pi-ai";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig, JiraConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
-import { text, truncate } from "../lib/output.js";
+import { text, truncate, rawJson } from "../lib/output.js";
+
+const DEFAULT_ISSUE_TYPE_FIELDS = ["name", "id", "subtask"] as const;
+const DEFAULT_FIELD_META_FIELDS = ["fieldId", "name", "schema", "required", "allowedValues", "defaultValue"] as const;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -23,7 +26,7 @@ async function fetchIssueTypes(
 
   await throwIfError(response, `Project not found: ${projectKey}`);
 
-  const data = await response.json();
+  const data: any = await response.json();
   return data.values ?? data.issueTypes ?? data ?? [];
 }
 
@@ -60,7 +63,7 @@ async function fetchFields(
 
   await throwIfError(response);
 
-  const data = await response.json();
+  const data: any = await response.json();
   return data.values ?? data.fields ?? [];
 }
 
@@ -171,6 +174,13 @@ export function registerFieldsTool(
             "Issue type name (e.g., Bug, Task, Story). Omit to list available issue types.",
         }),
       ),
+      raw: Type.Optional(
+        Type.Boolean({
+          description:
+            "Return the raw API response instead of the filtered summary (default false). " +
+            "Warning: raw output can be very large and may consume significant context window.",
+        }),
+      ),
     }),
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -179,12 +189,14 @@ export function registerFieldsTool(
       const issueTypes = await fetchIssueTypes(cfg, params.projectKey, signal);
 
       if (!params.issueType) {
+        if (params.raw) return rawJson(issueTypes);
         return text(formatIssueTypeList(params.projectKey, issueTypes));
       }
 
       const matchedType = resolveIssueType(issueTypes, params.issueType, params.projectKey);
       const fields = await fetchFields(cfg, params.projectKey, matchedType.id, signal);
 
+      if (params.raw) return rawJson(fields);
       return text(truncate(formatFieldMetadata(params.projectKey, matchedType.name, fields)));
     },
   });
