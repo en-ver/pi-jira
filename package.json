@@ -1,0 +1,31 @@
+{
+  "name": "pi-jira",
+  "version": "1.0.0",
+  "description": "Jira Cloud integration for pi — search, read, create, edit issues and comments",
+  "keywords": [
+    "pi-package",
+    "jira",
+    "atlassian"
+  ],
+  "license": "MIT",
+  "pi": {
+    "extensions": [
+      "./extensions/jira.ts"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "dependencies": {
+    "adf-to-markdown": "^1.0.1",
+    "marklassian": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-ai": "*",
+    "@mariozechner/pi-coding-agent": "*",
+    "@sinclair/typebox": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

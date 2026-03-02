@@ -1,0 +1,5 @@
+{
+  "url": "$JIRA_URL",
+  "email": "$JIRA_EMAIL",
+  "apiToken": "$JIRA_API_TOKEN"
+}
