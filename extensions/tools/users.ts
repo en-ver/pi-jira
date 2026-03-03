@@ -17,6 +17,10 @@ export function registerUsersTool(
       "Search for Jira users by name or email. Returns display name and account ID " +
       "which can be used in fields like assignee, reporter, etc. " +
       "Use this to look up account IDs before assigning users to issues.",
+    promptSnippet: "Search for Jira users by name or email to get accountId",
+    promptGuidelines: [
+      "Use the returned accountId for assignee, reporter, or other user fields in jira_create and jira_edit.",
+    ],
     parameters: Type.Object({
       query: Type.String({
         description: "Search string to match against user name or email",

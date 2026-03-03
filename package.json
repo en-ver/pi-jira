@@ -1,6 +1,6 @@
 {
   "name": "pi-jira",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Jira Cloud integration for pi — search, read, create, edit issues and comments",
   "keywords": [
     "pi-package",
@@ -27,6 +27,7 @@
     "@sinclair/typebox": "*"
   },
   "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.55.4",
     "typescript": "^5.9.3"
   }
 }

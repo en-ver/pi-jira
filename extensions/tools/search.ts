@@ -24,6 +24,7 @@ export function registerSearchTool(
     description:
       "Search Jira issues using JQL. Returns a formatted list of matching issues " +
       "with key, summary, status, type, priority, and assignee.",
+    promptSnippet: "Search Jira issues using JQL with pagination",
     parameters: Type.Object({
       jql: Type.String({
         description: "JQL query string (e.g., 'project = PROJ AND status = Open')",

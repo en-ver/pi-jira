@@ -166,6 +166,12 @@ export function registerFieldsTool(
       "Without issueType, lists available issue types. " +
       "With issueType, returns all fields with names, IDs, required flag, types, " +
       "and allowed values for dropdown/select fields.",
+    promptSnippet: "Discover issue types and required fields for a project",
+    promptGuidelines: [
+      "Call without issueType to list available issue types for a project.",
+      "Call with issueType to get all fields, their types, and which are required.",
+      "Required fields must be provided when creating an issue via jira_create.",
+    ],
     parameters: Type.Object({
       projectKey: Type.String({ description: "Project key (e.g., PROJ)" }),
       issueType: Type.Optional(

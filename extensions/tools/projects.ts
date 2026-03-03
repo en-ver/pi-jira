@@ -16,6 +16,7 @@ export function registerProjectsTool(
     description:
       "List Jira projects. Optionally filter by name or key with a search query. " +
       "Returns project key and name only.",
+    promptSnippet: "List available Jira projects with optional search filter",
     parameters: Type.Object({
       query: Type.Optional(
         Type.String({

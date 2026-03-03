@@ -17,6 +17,11 @@ export function registerCommentsTool(
       "List comments on a Jira issue with pagination support. " +
       "Use this when you need all comments or a specific page — " +
       "for most cases the comments included in jira_read (first 50) are sufficient.",
+    promptSnippet: "List all comments on a Jira issue with pagination",
+    promptGuidelines: [
+      "For most cases, the comments included in jira_read (first 50) are sufficient.",
+      "Use this tool when you need all comments, a specific page, or reverse chronological order.",
+    ],
     parameters: Type.Object({
       issueKey: Type.String({ description: "Issue key (e.g., PROJ-123)" }),
       startAt: Type.Optional(

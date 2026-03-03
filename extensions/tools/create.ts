@@ -15,6 +15,12 @@ export function registerCreateTool(
     description:
       "Create a new Jira issue. Provide the description in markdown — it will be " +
       "converted to Atlassian Document Format automatically.",
+    promptSnippet: "Create a new Jira issue with markdown description",
+    promptGuidelines: [
+      "Always use jira_fields first to discover required custom fields for the target project and issue type.",
+      "Provide descriptions in markdown format — they are converted to ADF automatically.",
+      "Use jira_users to look up account IDs for assignee or reporter fields.",
+    ],
     parameters: Type.Object({
       projectKey: Type.String({ description: "Project key (e.g., PROJ)" }),
       issueType: Type.String({

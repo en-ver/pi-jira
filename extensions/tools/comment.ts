@@ -15,6 +15,10 @@ export function registerCommentTool(
     description:
       "Add a comment to a Jira issue. Provide the comment body in markdown — " +
       "it will be converted to Atlassian Document Format automatically.",
+    promptSnippet: "Add a comment to a Jira issue in markdown",
+    promptGuidelines: [
+      "Provide comments in markdown format — they are converted to ADF automatically.",
+    ],
     parameters: Type.Object({
       issueKey: Type.String({ description: "Issue key (e.g., PROJ-123)" }),
       body: Type.String({ description: "Comment text in markdown" }),
