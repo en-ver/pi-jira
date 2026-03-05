@@ -5,18 +5,6 @@ description: Jira issue management workflows. Use when creating, editing, or sea
 
 # Jira Workflows
 
-## Available Tools
-
-- `jira_search` — Search issues using JQL
-- `jira_read` — Read a single issue with description and comments
-- `jira_create` — Create a new issue
-- `jira_edit` — Update an existing issue
-- `jira_comment` — Add a comment to an issue
-- `jira_comments` — List comments with pagination (when `jira_read`'s first 50 aren't enough)
-- `jira_fields` — Get field metadata (issue types, required fields, allowed values)
-- `jira_projects` — List projects (key + name), optionally filtered by search query
-- `jira_users` — Search users by name or email, returns display name and account ID
-
 ## Creating an Issue
 
 **Always follow these steps in order:**
@@ -34,30 +22,9 @@ description: Jira issue management workflows. Use when creating, editing, or sea
 
 If you don't know the issue type, call `jira_fields` with just `projectKey` first to list available issue types.
 
-## Editing an Issue
+## JQL Search Patterns
 
-1. If you need to set dropdown/select fields, call `jira_fields` first to get allowed values.
-2. Call `jira_edit` with the fields to update. You only need to provide the fields you're changing.
-3. Description and summary can be passed directly. Custom fields go in the `fields` parameter.
-
-## Reading an Issue
-
-Call `jira_read` with the issue key. Description and comments are returned as markdown.
-
-### Comments
-
-`jira_read` returns comments inline with the issue data. In most cases this is sufficient — the majority of issues have few enough comments to fit in a single page. When more exist than returned, the output indicates the total and directs you to use `jira_comments` (e.g., "showing 20 of 120 — use jira_comments to fetch all").
-
-For issues where you need **all** comments, use `jira_comments` — a dedicated tool backed by `GET /rest/api/3/issue/{key}/comment` with full pagination:
-- `startAt` — offset for pagination (e.g., `startAt=50` for the second page)
-- `maxResults` — up to 100 per call
-- `orderBy` — `"created"` (oldest first) or `"-created"` (newest first)
-
-Only use `jira_comments` when `jira_read` indicates truncation or when the user explicitly needs the full comment history.
-
-## Searching Issues
-
-Use `jira_search` with a JQL query. Common JQL patterns:
+Common JQL queries for `jira_search`:
 
 - `assignee = currentUser()` — my issues
 - `project = PROJ AND status = "In Progress"` — project issues by status
@@ -65,10 +32,6 @@ Use `jira_search` with a JQL query. Common JQL patterns:
 - `text ~ "search term"` — full-text search
 - `created >= -7d` — recently created
 - `updated >= -1d ORDER BY updated DESC` — recently updated
-
-## Adding Comments
-
-Call `jira_comment` with the issue key and comment body in markdown.
 
 ## Field Value Formats
 

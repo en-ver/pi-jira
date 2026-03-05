@@ -36,8 +36,7 @@ export function registerReadTool(
       "To include custom fields, use jira_fields first to discover their IDs (e.g., customfield_12345).",
     promptSnippet: "Read a Jira issue with full details including description and comments",
     promptGuidelines: [
-      "Use jira_fields to discover custom field IDs before requesting specific fields.",
-      "Use raw: true to get the full API response including all custom fields (can be large).",
+      "Use raw: true for full API response including all custom fields (can be large).",
     ],
     parameters: Type.Object({
       issueKey: Type.String({ description: "Issue key (e.g., PROJ-123)" }),

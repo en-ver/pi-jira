@@ -17,9 +17,8 @@ export function registerEditTool(
       "Description should be in markdown — it will be converted to ADF automatically.",
     promptSnippet: "Update an existing Jira issue's fields or description",
     promptGuidelines: [
-      "Returns 204 No Content on success — raw mode shows HTTP status only.",
       "Use jira_fields to discover field names and allowed values before updating.",
-      "Use jira_users to look up account IDs for assignee field updates.",
+      "Use jira_users to look up account IDs for assignee updates.",
     ],
     parameters: Type.Object({
       issueKey: Type.String({ description: "Issue key (e.g., PROJ-123)" }),

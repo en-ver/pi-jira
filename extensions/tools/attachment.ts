@@ -36,9 +36,7 @@ export function registerAttachmentTool(
       "For images (jpg, png, gif, webp), the content is also returned inline for viewing.",
     promptSnippet: "Download a Jira issue attachment by ID",
     promptGuidelines: [
-      "Use jira_read first to get attachment IDs from the issue's attachment array.",
-      "Each attachment in jira_read output has an id, filename, mimeType, and size.",
-      "For large files, check the size before downloading.",
+      "Use jira_read first to get attachment IDs from the issue.",
     ],
     parameters: Type.Object({
       attachmentId: Type.String({ description: "Attachment ID (e.g., 63899)" }),

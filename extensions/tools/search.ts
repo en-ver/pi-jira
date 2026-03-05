@@ -25,6 +25,9 @@ export function registerSearchTool(
       "Search Jira issues using JQL. Returns a formatted list of matching issues " +
       "with key, summary, status, type, priority, and assignee.",
     promptSnippet: "Search Jira issues using JQL with pagination",
+    promptGuidelines: [
+      "Common JQL: assignee = currentUser(), project = PROJ AND status = \"In Progress\", sprint in openSprints(), text ~ \"term\", created >= -7d.",
+    ],
     parameters: Type.Object({
       jql: Type.String({
         description: "JQL query string (e.g., 'project = PROJ AND status = Open')",
