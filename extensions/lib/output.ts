@@ -17,6 +17,16 @@ export function truncate(s: string): string {
   return result.content;
 }
 
+export function formatSize(bytes: number): string {
+  if (typeof bytes !== "number" || isNaN(bytes) || !isFinite(bytes) || bytes < 0) {
+    return "unknown size";
+  }
+  if (bytes >= 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${bytes} bytes`;
+}
+
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "—";
   try {

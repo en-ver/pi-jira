@@ -9,6 +9,7 @@ import { registerCommentsTool } from "./tools/comments.js";
 import { registerProjectsTool } from "./tools/projects.js";
 import { registerFieldsTool } from "./tools/fields.js";
 import { registerUsersTool } from "./tools/users.js";
+import { registerAttachmentTool } from "./tools/attachment.js";
 
 export default function (pi: ExtensionAPI) {
   // Config is loaded lazily on first tool call so ctx.cwd is available
@@ -43,4 +44,5 @@ export default function (pi: ExtensionAPI) {
   registerProjectsTool(pi, getConfig);
   registerFieldsTool(pi, getConfig);
   registerUsersTool(pi, getConfig);
+  registerAttachmentTool(pi, getConfig);
 }

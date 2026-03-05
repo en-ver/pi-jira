@@ -6,13 +6,14 @@ export async function jiraFetch(
   apiPath: string,
   body?: unknown,
   signal?: AbortSignal,
+  accept?: string,
 ): Promise<Response> {
   const url = `${config.url}/rest/api/3/${apiPath}`;
   const auth = Buffer.from(`${config.email}:${config.apiToken}`).toString("base64");
 
   const headers: Record<string, string> = {
     Authorization: `Basic ${auth}`,
-    Accept: "application/json",
+    Accept: accept ?? "application/json",
   };
 
   if (body !== undefined) {

@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import type { GetConfig } from "../lib/config.js";
 import { jiraFetch, throwIfError } from "../lib/http.js";
 import { adfToMd } from "../lib/adf.js";
-import { text, truncate, rawJson, formatDate, displayName, renderComment } from "../lib/output.js";
+import { text, truncate, rawJson, formatDate, formatSize, displayName, renderComment } from "../lib/output.js";
 
 const DEFAULT_FIELDS = [
   "summary",
@@ -19,6 +19,7 @@ const DEFAULT_FIELDS = [
   "fixVersions",
   "description",
   "comment",
+  "attachment",
 ];
 
 export function registerReadTool(
@@ -88,6 +89,15 @@ export function registerReadTool(
       if (f.fixVersions?.length)
         lines.push(`Fix Versions: ${f.fixVersions.map((v: any) => v.name).join(", ")}`);
       lines.push(`URL: ${cfg.url}/browse/${issue.key}`);
+
+      // Attachments
+      const attachments: any[] = f.attachment ?? [];
+      if (attachments.length > 0) {
+        lines.push("", `## Attachments (${attachments.length})`);
+        for (const att of attachments) {
+          lines.push(`- ${att.filename} (id: ${att.id}, ${att.mimeType}, ${formatSize(att.size ?? 0)})`);
+        }
+      }
 
       // Description
       lines.push("", "## Description", adfToMd(f.description));
